@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+Disallow: /google.php
+Disallow: /router.php
+
+Sitemap: https://app.tecnofenx.com.br/sitemap.php
+Sitemap: https://app.tecnofenx.com.br/sitemap.xml

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img"
+    aria-label="Driver Finances favicon">
+    <rect width="64" height="64" rx="16" fill="#000000" />
+
+    <g fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="23" cy="20" r="10" stroke-width="2.4" />
+        <path d="M19 14.5h8M20 20h6M21 25.5h4" stroke-width="2.2" />
+
+        <path d="M16 42l8-8 5 5 10-10" stroke-width="2.4" />
+        <path d="M39 16h7v7" stroke-width="2.4" />
+
+        <path d="M12 35h28l5 7H9l3-7Z" stroke-width="2.4" />
+        <path d="M18 35v-8h10v8" stroke-width="2.2" />
+        <path d="M28 35v-8h8v8" stroke-width="2.2" />
+        <path d="M16 27h17" stroke-width="2.2" />
+        <path d="M9 40h7" stroke-width="2.4" />
+        <path d="M35 40h13" stroke-width="2.4" />
+    </g>
+
+    <g fill="#ffffff">
+        <circle cx="23" cy="20" r="1.4" />
+    </g>
+</svg>

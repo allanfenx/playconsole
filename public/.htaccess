@@ -1,0 +1,18 @@
+RewriteEngine On
+RewriteBase /
+
+<FilesMatch "^\.env">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+<FilesMatch "service-account\.json$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+RewriteRule ^google$ google.php [L,QSA]
+RewriteRule ^politica-de-privacidade$ politica-de-privacidade.php [L]
+RewriteRule ^politica-de-privacidade\.html$ politica-de-privacidade.php [L]
+
+DirectoryIndex index.php
