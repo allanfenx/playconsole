@@ -55,14 +55,15 @@ $ogImage = site_url('/og-image.jpg');
     </noscript>
     <?php if ($includeAnalytics): ?>
     <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=<?= e(GA_MEASUREMENT_ID) ?>"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
+    <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DYR8GLDFDD"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
 
-        gtag('config', '<?= e(GA_MEASUREMENT_ID) ?>');
-    </script>
+    gtag('config', 'G-DYR8GLDFDD');
+  </script>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=<?= e(ADS_ID) ?>"></script>
     <script>

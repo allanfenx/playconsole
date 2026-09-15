@@ -1,5 +1,6 @@
 .DS_Store
 .env
+.env.deploy
 /storage
 /credentials/*.json
 /credentials/*.pem

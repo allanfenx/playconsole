@@ -131,7 +131,45 @@ Hospedagem **Linux**. PHP **8.1+** no painel.
     src/app.js
 ```
 
-`.env` e `service-account.json` precisam ir no FTP, mesmo estando no `.gitignore`.
+`.env` e `service-account.json` precisam ir no FTP **uma vez**, mesmo estando no `.gitignore`. O deploy automático **não** envia esses arquivos.
+
+### Deploy automático (GitHub Actions)
+
+A Locaweb não clona o Git. Cada push em `main` (pastas `public/` e `includes/`) sobe os arquivos por FTP.
+
+1. No painel: [painelhospedagem.locaweb.com.br](https://painelhospedagem.locaweb.com.br/) → **Administrar** → **Arquivos e FTP**.
+2. No GitHub: **Settings → Secrets and variables → Actions** e crie:
+
+| Secret | Valor no painel Locaweb |
+| --- | --- |
+| `HOST` | Host do servidor FTP |
+| `USER` | Usuário FTP |
+| `PASS` | Senha FTP |
+
+3. Faça o commit da pasta `.github/workflows/deploy.yml` quando quiser ligar a automação.
+4. Acompanhe em **Actions**. Também dá para rodar na mão: **Actions → Deploy Locaweb → Run workflow**.
+
+O que **não** sobe: `.env`, `credentials/*.json`, `public/router.php`, `public/.htaccess` (para não apagar o `AddHandler` da Locaweb).
+
+Primeira vez no servidor (FTP, uma vez só):
+
+- `.env` na pasta do usuário (acima de `public_html`)
+- `credentials/service-account.json` no mesmo nível
+- `.htaccess` mesclado (veja abaixo)
+
+### Deploy local (sem GitHub)
+
+```bash
+cp .env.deploy.example .env.deploy
+# preencha HOST, USER e senha do FTP
+brew install lftp
+chmod +x scripts/deploy-locaweb.sh
+./scripts/deploy-locaweb.sh
+```
+
+`.env.deploy` está no `.gitignore`.
+
+Para enviar também o `.htaccess` neste script, use `DEPLOY_HTACCESS=1` no `.env.deploy`.
 
 ### `.htaccess`
 

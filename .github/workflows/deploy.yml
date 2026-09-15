@@ -1,0 +1,37 @@
+name: Deploy Locaweb
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'public/**'
+      - 'includes/**'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: FTP
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Enviar public/ → public_html/
+        uses: locaweb/ftp-deploy@1.0.0
+        with:
+          host: ${{ secrets.HOST }}
+          user: ${{ secrets.USER }}
+          password: ${{ secrets.PASS }}
+          localDir: public
+          remoteDir: public_html
+          options: '-x ^router\\.php$ -x ^\\.htaccess$ -X .DS_Store'
+
+      - name: Enviar includes/ → includes/
+        uses: locaweb/ftp-deploy@1.0.0
+        with:
+          host: ${{ secrets.HOST }}
+          user: ${{ secrets.USER }}
+          password: ${{ secrets.PASS }}
+          localDir: includes
+          remoteDir: includes
+          options: '-X .DS_Store'
