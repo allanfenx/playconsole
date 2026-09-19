@@ -172,7 +172,7 @@ $privacyHref = $isHome ? '/politica-de-privacidade.php' : '';
         }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="/src/app.js?v=20260914b"></script>
+    <script src="/src/app.js?v=20260919c"></script>
     <?php endif; ?>
 </body>
 

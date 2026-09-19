@@ -5,20 +5,73 @@ const headerDownloadBtn = document.getElementById("headerDownloadBtn");
 const heroDownloadBtn = document.getElementById("heroDownloadBtn");
 const ctaDownloadBtn = document.getElementById("ctaDownloadBtn");
 const testerPageUrl = "https://play.google.com/apps/testing/com.allanfenx.finance";
+const testerOpenDelayMs = 15000;
 
 function getApiBaseUrl() {
     return window.location.origin;
 }
 
-function openTesterPage() {
-    const testerWindow = window.open(testerPageUrl, "_blank");
+function wait(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function writeTesterWaitPage(testerWindow, title, detail) {
+    if (!testerWindow || testerWindow.closed) {
+        return;
+    }
+
+    testerWindow.document.open();
+    testerWindow.document.write(`<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>${title}</title>
+  <style>
+    body { font-family: Inter, system-ui, sans-serif; margin: 0; min-height: 100vh; display: grid; place-items: center;
+      background: #f8fafc; color: #0f172a; text-align: center; padding: 2rem; }
+    p { color: #475569; max-width: 28rem; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <div>
+    <h1>${title}</h1>
+    <p>${detail}</p>
+  </div>
+</body>
+</html>`);
+    testerWindow.document.close();
+}
+
+function openBlankTesterWindow() {
+    const testerWindow = window.open("about:blank", "_blank");
 
     if (testerWindow) {
         testerWindow.opener = null;
-        return true;
+        writeTesterWaitPage(
+            testerWindow,
+            "Cadastrando seu e-mail…",
+            "Estamos incluindo você no Google Group de testadores. A página da Play abre em seguida."
+        );
     }
 
-    return false;
+    return testerWindow;
+}
+
+async function goToTesterPage(testerWindow) {
+    const totalSeconds = Math.ceil(testerOpenDelayMs / 1000);
+
+    for (let remaining = totalSeconds; remaining > 0; remaining -= 1) {
+        writeTesterWaitPage(
+            testerWindow,
+            "E-mail cadastrado no grupo",
+            `O Google Play ainda está liberando sua conta. Abrindo o convite em ${remaining}s…`
+        );
+        await wait(1000);
+    }
+
+    if (testerWindow && !testerWindow.closed) {
+        testerWindow.location.href = testerPageUrl;
+    }
 }
 
 function trackLead(origem) {
@@ -109,13 +162,14 @@ if (formEmail && submitButton && heroActions) {
         submitButton.disabled = true;
         submitButton.textContent = "Enviando...";
 
-        // Abre no mesmo clique do usuário. Depois do await o navegador bloqueia pop-up.
-        openTesterPage();
+        // Abre no clique; o destino só vai depois do cadastro no Google Group.
+        const testerWindow = openBlankTesterWindow();
 
         try {
             await axios.post(`${getApiBaseUrl()}/google.php`, { email });
 
             trackLead("novo_cadastro");
+            await goToTesterPage(testerWindow);
             showSuccessState();
         } catch (error) {
             const apiMessage = getApiErrorMessage(error);
@@ -128,8 +182,13 @@ if (formEmail && submitButton && heroActions) {
 
             if (isAlreadyRegistered) {
                 trackLead("ja_cadastrado");
+                await goToTesterPage(testerWindow);
                 showSuccessState();
                 return;
+            }
+
+            if (testerWindow && !testerWindow.closed) {
+                testerWindow.close();
             }
 
             submitButton.disabled = false;

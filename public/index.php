@@ -35,8 +35,9 @@ require_once dirname(__DIR__) . '/includes/config.php';
                     </form>
 
                     <div class="hero-actions" id="googlePlay">
-                        <p class="tester-help" id="testerHelp">Se a tela de teste não abriu, toque no botão abaixo e
-                            depois em “Become a tester” / “Tornar-se um testador”.</p>
+                        <p class="tester-help" id="testerHelp">Se aparecer “App not available”, o Google Play ainda não
+                            viu o grupo. Confirme o mesmo Gmail da Play Store, espere um ou dois minutos e toque de
+                            novo em “Aceitar participar do teste”.</p>
                         <a class="btn btn-primary btn-lg" id="testerAcceptBtn"
                             href="<?= e(TESTER_URL) ?>" target="_blank"
                             rel="noopener noreferrer">
@@ -229,6 +230,12 @@ require_once dirname(__DIR__) . '/includes/config.php';
                             <dt>Aparece “item não encontrado”</dt>
                             <dd>Quase sempre é conta trocada. Abra a Play Store, toque na sua foto de perfil e confirme
                                 que está no mesmo Gmail que você cadastrou.</dd>
+                        </div>
+                        <div>
+                            <dt>Aparece “App not available”</dt>
+                            <dd>O e-mail já está no grupo, mas o Google Play atrasa para liberar. Espere um ou dois
+                                minutos, recarregue a aba do convite ou toque de novo em “Aceitar participar do teste”.
+                                Use o mesmo Gmail da Play Store do celular.</dd>
                         </div>
                         <div>
                             <dt>A conta está certa e mesmo assim não libera</dt>

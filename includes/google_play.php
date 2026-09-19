@@ -69,8 +69,10 @@ function google_play_add_tester(string $email): bool
     }
 
     $token = google_play_access_token();
+    $alreadyMember = google_play_add_group_member($token, $email);
+    google_play_wait_for_member($token, $email);
 
-    return google_play_add_group_member($token, $email);
+    return $alreadyMember;
 }
 
 function google_play_add_group_member(string $token, string $email): bool
@@ -81,6 +83,7 @@ function google_play_add_group_member(string $token, string $email): bool
         [
             'email' => $email,
             'role' => 'MEMBER',
+            'type' => 'USER',
         ],
         [
             'Authorization: Bearer ' . $token,
@@ -101,6 +104,40 @@ function google_play_add_group_member(string $token, string $email): bool
 
     $message = $result['error']['message'] ?? $result['error_description'] ?? ('HTTP ' . $status);
     throw new RuntimeException(is_string($message) ? $message : 'Erro ao adicionar testador no Google Group.');
+}
+
+function google_play_member_is_active(string $token, string $email): bool
+{
+    $result = google_play_http(
+        'GET',
+        'https://admin.googleapis.com/admin/directory/v1/groups/'
+            . rawurlencode(GOOGLE_WORKSPACE_GROUP)
+            . '/members/'
+            . rawurlencode($email),
+        null,
+        [
+            'Authorization: Bearer ' . $token,
+        ],
+        false
+    );
+
+    $status = (int) ($result['_http_status'] ?? 0);
+    $memberStatus = strtoupper((string) ($result['status'] ?? ''));
+
+    return $status === 200 && ($memberStatus === '' || $memberStatus === 'ACTIVE');
+}
+
+function google_play_wait_for_member(string $token, string $email, int $tries = 8): void
+{
+    for ($i = 0; $i < $tries; $i++) {
+        if (google_play_member_is_active($token, $email)) {
+            return;
+        }
+
+        sleep(1);
+    }
+
+    throw new RuntimeException('O Google Group ainda não confirmou o e-mail como membro ativo. Tente de novo em alguns segundos.');
 }
 
 /**
