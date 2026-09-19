@@ -5,7 +5,7 @@ const headerDownloadBtn = document.getElementById("headerDownloadBtn");
 const heroDownloadBtn = document.getElementById("heroDownloadBtn");
 const ctaDownloadBtn = document.getElementById("ctaDownloadBtn");
 const testerPageUrl = "https://play.google.com/apps/testing/com.allanfenx.finance";
-const testerOpenDelayMs = 15000;
+const testerOpenDelayMs = 5000;
 
 function getApiBaseUrl() {
     return window.location.origin;
