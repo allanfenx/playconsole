@@ -8,5 +8,6 @@ header('Content-Type: text/plain; charset=utf-8');
 
 echo "User-agent: *\n";
 echo "Allow: /\n\n";
+echo "Disallow: /google.php\n";
+echo "Disallow: /router.php\n\n";
 echo 'Sitemap: ' . site_url('/sitemap.xml') . "\n";
-echo 'Sitemap: ' . site_url('/sitemap.php') . "\n";

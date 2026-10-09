@@ -96,23 +96,98 @@ function resolve_google_credentials_path(string $value): string
 
 function site_url(string $path = ''): string
 {
-    $forwarded = strtolower((string) ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? ''));
-    $https = $forwarded === 'https'
-        || (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-        || (string) ($_SERVER['SERVER_PORT'] ?? '') === '443';
+    $configured = rtrim(env('SITE_URL', ''), '/');
 
-    $scheme = $https ? 'https' : 'http';
-    $host = $_SERVER['HTTP_HOST'] ?? 'localhost:8080';
+    if ($configured !== '') {
+        $base = $configured;
+    } else {
+        $host = strtolower((string) ($_SERVER['HTTP_HOST'] ?? 'localhost:8080'));
+        $hostOnly = preg_replace('/:\d+$/', '', $host) ?? $host;
+
+        if ($hostOnly === 'app.tecnofenx.com.br' || $hostOnly === 'www.app.tecnofenx.com.br') {
+            $base = 'https://app.tecnofenx.com.br';
+        } else {
+            $forwarded = strtolower((string) ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? ''));
+            $https = $forwarded === 'https'
+                || (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+                || (string) ($_SERVER['SERVER_PORT'] ?? '') === '443';
+            $scheme = $https ? 'https' : 'http';
+            $base = $scheme . '://' . $host;
+        }
+    }
+
     $normalized = '/' . ltrim($path, '/');
 
     if ($normalized === '/') {
-        return $scheme . '://' . $host . '/';
+        return $base . '/';
     }
 
-    return $scheme . '://' . $host . $normalized;
+    return $base . $normalized;
+}
+
+function request_is_https(): bool
+{
+    $forwarded = strtolower((string) ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? ''));
+
+    return $forwarded === 'https'
+        || (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+        || (string) ($_SERVER['SERVER_PORT'] ?? '') === '443';
+}
+
+function enforce_canonical_request(): void
+{
+    if (PHP_SAPI === 'cli' || PHP_SAPI === 'phpdbg') {
+        return;
+    }
+
+    $method = strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET'));
+
+    if ($method !== 'GET' && $method !== 'HEAD') {
+        return;
+    }
+
+    $host = strtolower((string) ($_SERVER['HTTP_HOST'] ?? ''));
+    $hostOnly = preg_replace('/:\d+$/', '', $host) ?? $host;
+
+    if ($hostOnly !== 'app.tecnofenx.com.br' && $hostOnly !== 'www.app.tecnofenx.com.br') {
+        return;
+    }
+
+    $requestUri = (string) ($_SERVER['REQUEST_URI'] ?? '/');
+    $path = parse_url($requestUri, PHP_URL_PATH) ?: '/';
+    $theRequest = (string) ($_SERVER['THE_REQUEST'] ?? '');
+
+    if (preg_match('#^[A-Z]+\s+([^?\s]+)#', $theRequest, $matches) === 1) {
+        $path = rawurldecode($matches[1]);
+    }
+
+    $query = parse_url($requestUri, PHP_URL_QUERY);
+    $targetPath = match ($path) {
+        '/index.php', '/index.php/' => '/',
+        '/politica-de-privacidade.php',
+        '/politica-de-privacidade.html',
+        '/politica-de-privacidade.php/',
+        '/politica-de-privacidade.html/' => '/politica-de-privacidade',
+        default => $path,
+    };
+
+    if ($hostOnly === 'app.tecnofenx.com.br' && request_is_https() && $targetPath === $path) {
+        return;
+    }
+
+    $location = 'https://app.tecnofenx.com.br' . $targetPath;
+
+    if (is_string($query) && $query !== '') {
+        $location .= '?' . $query;
+    }
+
+    header('Location: ' . $location, true, 301);
+    exit;
 }
 
 function e(string $value): string
 {
     return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
+
+enforce_canonical_request();

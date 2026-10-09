@@ -9,8 +9,11 @@ switch ($uri) {
         require __DIR__ . '/google.php';
         return true;
     case '/politica-de-privacidade':
-    case '/politica-de-privacidade.html':
         require __DIR__ . '/politica-de-privacidade.php';
+        return true;
+    case '/politica-de-privacidade.php':
+    case '/politica-de-privacidade.html':
+        header('Location: /politica-de-privacidade', true, 301);
         return true;
     case '/robots.txt':
         require __DIR__ . '/robots.php';
@@ -19,8 +22,10 @@ switch ($uri) {
         require __DIR__ . '/sitemap.php';
         return true;
     case '/':
-    case '/index.php':
         require __DIR__ . '/index.php';
+        return true;
+    case '/index.php':
+        header('Location: /', true, 301);
         return true;
 }
 

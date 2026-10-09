@@ -6,7 +6,7 @@ require_once __DIR__ . '/config.php';
 
 $isHome = $isHome ?? false;
 $year = date('Y');
-$privacyHref = $isHome ? '/politica-de-privacidade.php' : '';
+$privacyHref = $isHome ? '/politica-de-privacidade' : '';
 ?>
     <footer class="footer">
         <div class="container footer-inner">

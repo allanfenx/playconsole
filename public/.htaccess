@@ -11,8 +11,18 @@ RewriteBase /
     Deny from all
 </FilesMatch>
 
+RewriteCond %{HTTP_HOST} ^www\.app\.tecnofenx\.com\.br$ [NC]
+RewriteRule ^ https://app.tecnofenx.com.br%{REQUEST_URI} [R=301,L]
+
+RewriteCond %{HTTPS} !=on
+RewriteCond %{HTTP:X-Forwarded-Proto} !https
+RewriteCond %{SERVER_PORT} !^443$
+RewriteRule ^ https://app.tecnofenx.com.br%{REQUEST_URI} [R=301,L]
+
+RewriteRule ^index\.php/?$ https://app.tecnofenx.com.br/ [R=301,L]
+RewriteRule ^politica-de-privacidade\.(php|html)/?$ https://app.tecnofenx.com.br/politica-de-privacidade [R=301,L]
+
 RewriteRule ^google$ google.php [L,QSA]
-RewriteRule ^politica-de-privacidade$ politica-de-privacidade.php [L]
-RewriteRule ^politica-de-privacidade\.html$ politica-de-privacidade.php [L]
+RewriteRule ^politica-de-privacidade/?$ politica-de-privacidade.php [L]
 
 DirectoryIndex index.php

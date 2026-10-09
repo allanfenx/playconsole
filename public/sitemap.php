@@ -7,8 +7,8 @@ require dirname(__DIR__) . '/includes/config.php';
 header('Content-Type: application/xml; charset=utf-8');
 
 $home = site_url('/');
-$privacy = site_url('/politica-de-privacidade.php');
-$lastmod = '2026-08-17';
+$privacy = site_url('/politica-de-privacidade');
+$lastmod = '2026-10-09';
 
 echo '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
 ?>

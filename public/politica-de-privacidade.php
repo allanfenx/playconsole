@@ -6,7 +6,7 @@ $isHome = false;
 $includeAnalytics = false;
 $pageTitle = 'Política de Privacidade | Driver Finances';
 $pageDescription = 'Política de privacidade do Driver Finances: quais dados coletamos, por que coletamos e como você pode solicitar acesso ou exclusão.';
-$canonicalPath = '/politica-de-privacidade.php';
+$canonicalPath = '/politica-de-privacidade';
 $ogTitle = 'Política de Privacidade | Driver Finances';
 $ogDescription = 'Política de privacidade do Driver Finances: quais dados coletamos, por que coletamos e como você pode solicitar acesso ou exclusão.';
 
