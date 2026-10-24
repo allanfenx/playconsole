@@ -94,6 +94,20 @@ function resolve_google_credentials_path(string $value): string
     return is_file($relative) ? $relative : $default;
 }
 
+function canonical_site_host(): string
+{
+    return 'app.driverfinances.com.br';
+}
+
+function is_local_dev_host(string $hostOnly): bool
+{
+    if ($hostOnly === 'localhost' || $hostOnly === '127.0.0.1' || str_ends_with($hostOnly, '.localhost')) {
+        return true;
+    }
+
+    return filter_var($hostOnly, FILTER_VALIDATE_IP) !== false;
+}
+
 function site_url(string $path = ''): string
 {
     $configured = rtrim(env('SITE_URL', ''), '/');
@@ -104,15 +118,15 @@ function site_url(string $path = ''): string
         $host = strtolower((string) ($_SERVER['HTTP_HOST'] ?? 'localhost:8080'));
         $hostOnly = preg_replace('/:\d+$/', '', $host) ?? $host;
 
-        if ($hostOnly === 'app.tecnofenx.com.br' || $hostOnly === 'www.app.tecnofenx.com.br') {
-            $base = 'https://app.tecnofenx.com.br';
-        } else {
+        if (is_local_dev_host($hostOnly)) {
             $forwarded = strtolower((string) ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? ''));
             $https = $forwarded === 'https'
                 || (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
                 || (string) ($_SERVER['SERVER_PORT'] ?? '') === '443';
             $scheme = $https ? 'https' : 'http';
             $base = $scheme . '://' . $host;
+        } else {
+            $base = 'https://' . canonical_site_host();
         }
     }
 
@@ -129,8 +143,17 @@ function request_is_https(): bool
 {
     $forwarded = strtolower((string) ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? ''));
 
-    return $forwarded === 'https'
-        || (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+    if ($forwarded === 'https') {
+        return true;
+    }
+
+    $cfVisitor = (string) ($_SERVER['HTTP_CF_VISITOR'] ?? '');
+
+    if ($cfVisitor !== '' && str_contains($cfVisitor, '"scheme":"https"')) {
+        return true;
+    }
+
+    return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
         || (string) ($_SERVER['SERVER_PORT'] ?? '') === '443';
 }
 
@@ -149,7 +172,7 @@ function enforce_canonical_request(): void
     $host = strtolower((string) ($_SERVER['HTTP_HOST'] ?? ''));
     $hostOnly = preg_replace('/:\d+$/', '', $host) ?? $host;
 
-    if ($hostOnly !== 'app.tecnofenx.com.br' && $hostOnly !== 'www.app.tecnofenx.com.br') {
+    if (is_local_dev_host($hostOnly)) {
         return;
     }
 
@@ -171,11 +194,13 @@ function enforce_canonical_request(): void
         default => $path,
     };
 
-    if ($hostOnly === 'app.tecnofenx.com.br' && request_is_https() && $targetPath === $path) {
+    $canonicalHost = canonical_site_host();
+
+    if ($hostOnly === $canonicalHost && request_is_https() && $targetPath === $path) {
         return;
     }
 
-    $location = 'https://app.tecnofenx.com.br' . $targetPath;
+    $location = 'https://' . $canonicalHost . $targetPath;
 
     if (is_string($query) && $query !== '') {
         $location .= '?' . $query;

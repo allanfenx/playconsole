@@ -4,4 +4,4 @@ Allow: /
 Disallow: /google.php
 Disallow: /router.php
 
-Sitemap: https://app.tecnofenx.com.br/sitemap.xml
+Sitemap: https://app.driverfinances.com.br/sitemap.xml

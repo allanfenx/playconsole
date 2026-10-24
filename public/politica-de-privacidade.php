@@ -19,7 +19,7 @@ require_once dirname(__DIR__) . '/includes/config.php';
             <p class="legal-date">Última atualização: 17 de agosto de 2026</p>
 
             <p>Esta política explica quais dados o Driver Finances coleta, para que eles são usados e quais são os seus
-                direitos. Ela vale tanto para o site <strong>app.tecnofenx.com.br</strong> quanto para o aplicativo
+                direitos. Ela vale tanto para o site <strong>app.driverfinances.com.br</strong> quanto para o aplicativo
                 Driver Finances, disponível para Android.</p>
 
             <h2>1. Quem é o responsável</h2>
